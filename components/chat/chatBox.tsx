@@ -22,7 +22,7 @@ export const ColasipbleChatBox = ({ chatRoomName }: any) => {
   const listRef = useRef<HTMLElement | any>();
   useEffect(() => {
     let socket = connectChatServer();
-    socket.emit(`chat message`, message);
+    socket.emit(chatRoomName, message);
     return () => {
       socket.disconnect();
     };
@@ -31,7 +31,7 @@ export const ColasipbleChatBox = ({ chatRoomName }: any) => {
   useEffect(() => {
     let socket = connectChatServer();
     socket.onAny(async (type, message) => {
-		if (message) {
+		if (type===chatRoomName&&message) {
         await setIsSentMessage((e) => !e);
         scrollToLastMessage();
       }

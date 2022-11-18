@@ -27,7 +27,6 @@ export const UserSideBar = () => {
 						Authorization: token,
 					},
 				});
-				console.log(datas.data)
 				setUser(datas.data.data);
 			} catch (error) {}
 		};
