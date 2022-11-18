@@ -7,6 +7,7 @@ export const SelectedAdContext = createContext<SelectedAdContextType>({
       owner: {
         name: "",
       },
+      photo:"",
       _id:"",
       advertisingHeader:"",
       createdAt: "",
