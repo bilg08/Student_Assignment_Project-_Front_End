@@ -27,7 +27,7 @@ export const UserProfileBox = ({request,data}:any) => {
                         setIsAgainGetDatas(true);
                     await axios({
 						method: "delete",
-						url: `http://localhost:8000/post/${request._id}/removeWorker`,
+						url: `https://backend-leap2-production.up.railway.app/post/${request._id}/removeWorker`,
 						data:{
 							workerId:request.worker.id
 						},
@@ -74,7 +74,7 @@ export const UserProfileBox = ({request,data}:any) => {
 						
 						axios({
 							method: "post",
-							url: `http://localhost:8000/post/${data._id}/confirmWorkRequest`,
+							url: `https://backend-leap2-production.up.railway.app/post/${data._id}/confirmWorkRequest`,
 							data:{
 								workerId:request.id
 							},

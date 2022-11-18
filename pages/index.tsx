@@ -44,7 +44,7 @@ export default function Home() {
   useEffect(() => {
     async function getData() {
       try {
-        const datas = await axios.get("http://localhost:8000/post");
+        const datas = await axios.get("https://backend-leap2-production.up.railway.app/post");
         setAds(datas.data.data);
       } catch (error) {}
     }
@@ -62,7 +62,7 @@ export default function Home() {
         data:{
           id
         },
-        url: `http://localhost:8000/post/${id}/work`,
+        url: `https://backend-leap2-production.up.railway.app/post/${id}/work`,
         headers: {"authorization":getCookie('token')
       },
       })
@@ -97,7 +97,7 @@ export default function Home() {
   const onclick = (el: React.MouseEvent<HTMLButtonElement>) => {
     const button: HTMLButtonElement = el.currentTarget;
     const id = button.value;
-    axios.delete(`http://localhost:8000/post/${id}`).then(function (response) {
+    axios.delete(`https://backend-leap2-production.up.railway.app/post/${id}`).then(function (response) {
     });
   };
   const memoizedCard = useMemo(() => {}, []);
@@ -107,7 +107,7 @@ export default function Home() {
       <DetailImage
         imageSrc={
           selectedAd &&
-          `http://localhost:8000/post/photo/${selectedAd.ad.photo}`
+          `https://backend-leap2-production.up.railway.app/post/photo/${selectedAd.ad.photo}`
         }
       />
       <div className="flex h-40  justify-center flex-col items-center md:flex-row m-auto max-w-screen-xl gap-5">
@@ -205,7 +205,7 @@ export default function Home() {
                         <img
                           onClick={() => setCloseDetailImage(true)}
                           style={{ width: `100%`, height: "100%" }}
-                          src={`http://localhost:8000/post/photo/${selectedAd.ad.photo}`}
+                          src={`https://backend-leap2-production.up.railway.app/post/photo/${selectedAd.ad.photo}`}
                         />
                       </div>
                       <Button
@@ -247,7 +247,7 @@ export default function Home() {
                       <img
                         onClick={() => setCloseDetailImage(true)}
                         style={{ width: `100%`, height: "100%" }}
-                        src={`http://localhost:8000/post/photo/${selectedAd.ad.photo}`}
+                        src={`https://backend-leap2-production.up.railway.app/post/photo/${selectedAd.ad.photo}`}
                       />
                     </div>
                     <Button>Хийх</Button>
