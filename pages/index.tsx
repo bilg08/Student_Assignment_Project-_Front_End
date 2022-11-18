@@ -15,13 +15,13 @@ import { useIsAgainGetDatas } from "../context/againGetAllDatas";
 import { getCookie } from "cookies-next";
 type adsType = {
   _id: string | number | readonly string[] | undefined;
-  advertisingHeader: String;
-  detail: String;
+  advertisingHeader: string;
+  detail: string;
   owner: {
-    name: String;
-    image: String | any;
+    name: string;
+    image: string | any;
   };
-  createdAt: String;
+  createdAt: string;
   photo?: any;
 };
 
@@ -74,7 +74,7 @@ export default function Home() {
   };
 
   const DetailImage = (props: {
-    imageSrc: String;
+    imageSrc: string;
   }) => {
     return (
       <div

@@ -6,7 +6,7 @@ export type SelectedAdContextType = {
         name: String,
       },
       _id: String,
-      photo:String,
+      photo:string,
       advertisingHeader: String,
       createdAt: String,
     detail:String
