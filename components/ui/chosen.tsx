@@ -7,8 +7,8 @@ import {
 	Key,
 	MouseEventHandler,
 } from "react";
-import { UserProfileBox } from "../chat/userProfile";
-import { ProfileCard } from "../profileCard";
+import { UserProfileBox } from "../chat/UserProfile";
+import { ProfileCard } from "../ProfileCard";
 import { PostButton } from "./postButton";
 import { PostReceived } from "./postReceived";
 
@@ -42,7 +42,7 @@ const postedButtonArr = [
 			const button: HTMLButtonElement = el.currentTarget;
 			const id = button.value;
 			axios
-				.delete(`https://backend-leap2-production.up.railway.app/post/${id}`)
+				.delete(`http://localhost:8000/post/${id}`)
 				.then(function (response) {
 					console.log(response);
 				});

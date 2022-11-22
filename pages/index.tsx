@@ -26,29 +26,34 @@ type userInputType = {
 
 export default function Home() {
 	const { selectedAd, setSelectedAd } = useSelectedContext();
-	const { user } = useUserContext();
 	const [userInput, setUserInput] = useState<userInputType | object>({
 		school: "",
 		subject: "",
 	});
 	const {setModalText,setOpenModal} = useModalContext()
-	// console.log(user.email,'user')
 	const [ads, setAds] = useState<adsType[]>([]);
 	const windowWidth = useWindowWidth();
 	const [showModal, setShowModal] = useState(false);
 	const { isAgainGetDatas } = useIsAgainGetDatas();
-				console.log(user);
-
 	useEffect(() => {
+		const token = getCookie('userId')
 		async function getData() {
-			try {
-				const datas = await axios.get("https://backend-leap2-production.up.railway.app/post");
-				const posts = datas.data.data.filter((post: { owner: { email: String; }; }) => {
-					return post.owner.toString()!==user._id.toString()
+			await axios({
+				method: "get",
+				url: "http://localhost:8000/post",
+				headers: {
+					userId: token,
+				},
+			})
+				.then(async function (response) {
+					setAds(response.data.data)
+				})
+				.catch(function (response) {
+					console.log(response);
+	
 				});
-				setAds(posts);
-			} catch (error) {}
-		}
+		};
+		
 		getData();
 	}, [isAgainGetDatas]);
 	//TO-DO
@@ -61,14 +66,15 @@ export default function Home() {
 			data: {
 				id,
 			},
-			url: `https://backend-leap2-production.up.railway.app/post/${id}/work`,
-			headers: { authorization: getCookie("token") },
+			url: `http://localhost:8000/post/${id}/work`,
+			headers: { authorization: token },
 		})
-			.then(function (response) {
-				console.log(response)
+			.then(async function (response) {
+				await setModalText('amjilttai');
+				setOpenModal(true)
 			})
 			.catch(async function (error) {
-				console.log(error)
+				console.log(error.response.data)
 				await setModalText(error.response.data.data);
 				setOpenModal(true)
 			});
@@ -78,10 +84,9 @@ export default function Home() {
 		const button: HTMLButtonElement = el.currentTarget;
 		const id = button.value;
 		axios
-			.delete(`https://backend-leap2-production.up.railway.app/post/${id}`)
+			.delete(`http://localhost:8000/post/${id}`)
 			.then(function (response) {});
 	};
-	const memoizedCard = useMemo(() => {}, []);
 
 	return (
 		<div className='w-full border-#57534e border-1'>
@@ -143,7 +148,7 @@ export default function Home() {
 												<div className='flex'>
 													<img
 														style={{ width: `40px`, height: `40px` }}
-														src={`https://backend-leap2-production.up.railway.app/post/photo/${ad.photo}`}
+														src={`http://localhost:8000/post/photo/${ad.photo}`}
 													/>
 													<p className='text-gray-500'>
 														Зар тавигдсан хугацаа:{ad.createdAt}
@@ -217,7 +222,9 @@ export default function Home() {
 										<p className='text-gray-500'>
 											Зар тавигдсан хугацаа:{selectedAd.ad.createdAt}
 										</p>
-										<Button>Хийх</Button>
+										<Button
+										onClick={() => requestToDoWork(selectedAd.ad._id)}
+										>Хийх</Button>
 									</Card>
 									<Card>
 										<p>{selectedAd.ad.detail}</p>

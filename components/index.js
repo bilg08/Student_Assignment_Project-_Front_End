@@ -17,8 +17,7 @@ export * from './ui/siderBarBox';
 export * from './ui/myImage';
 export * from './profileCard';
 export * from './chat';
-export * from './modal';
-export * from './ui/chosen'
+export * from './modal'
 
 
 
