@@ -55,7 +55,6 @@ export default function Home() {
 	const handleSearch = () => {};
 
 	const requestToDoWork = async (id: String) => {
-		console.log('kk')
 		const token = getCookie("token");
 		await axios({
 			method: "post",
