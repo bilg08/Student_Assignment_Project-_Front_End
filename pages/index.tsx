@@ -40,7 +40,7 @@ export default function Home() {
 		async function getData() {
 			await axios({
 				method: "get",
-				url: "https://backend-leap2-production.up.railway.app//post",
+				url: "https://backend-leap2-production.up.railway.app/post",
 				headers: {
 					userId: token,
 				},
@@ -66,7 +66,7 @@ export default function Home() {
 			data: {
 				id,
 			},
-			url: `https://backend-leap2-production.up.railway.app//post/${id}/work`,
+			url: `https://backend-leap2-production.up.railway.app/post/${id}/work`,
 			headers: { authorization: token },
 		})
 			.then(async function (response) {
@@ -84,7 +84,7 @@ export default function Home() {
 		const button: HTMLButtonElement = el.currentTarget;
 		const id = button.value;
 		axios
-			.delete(`https://backend-leap2-production.up.railway.app//post/${id}`)
+			.delete(`https://backend-leap2-production.up.railway.app/post/${id}`)
 			.then(function (response) {});
 	};
 
@@ -148,7 +148,7 @@ export default function Home() {
 												<div className='flex'>
 													<img
 														style={{ width: `40px`, height: `40px` }}
-														src={`https://backend-leap2-production.up.railway.app//post/photo/${ad.photo}`}
+														src={`https://backend-leap2-production.up.railway.app/post/photo/${ad.photo}`}
 													/>
 													<p className='text-gray-500'>
 														Зар тавигдсан хугацаа:{ad.createdAt}

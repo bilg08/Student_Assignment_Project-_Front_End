@@ -23,7 +23,7 @@ export const ReceivedPosts = () => {
 			const token = getCookie("token");
 			try {
 				const datas = await axios.get(
-					"https://backend-leap2-production.up.railway.app//post/postToBeDone",
+					"https://backend-leap2-production.up.railway.app/post/postToBeDone",
 					{
 						headers: {
 							Authorization: token,
@@ -39,7 +39,7 @@ export const ReceivedPosts = () => {
 		const getPersonalData = async () => {
 			const token = getCookie("token");
 			try {
-				const datas = await axios.get("https://backend-leap2-production.up.railway.app//users/posts", {
+				const datas = await axios.get("https://backend-leap2-production.up.railway.app/users/posts", {
 					headers: {
 						Authorization: token,
 					},
@@ -63,7 +63,7 @@ export const ReceivedPosts = () => {
 				const button: HTMLButtonElement = el.currentTarget;
 				const id = button.value;
 				axios
-					.delete(`https://backend-leap2-production.up.railway.app//post/${id}`)
+					.delete(`https://backend-leap2-production.up.railway.app/post/${id}`)
 					.then(function (response) {
 						console.log(response);
 					});
