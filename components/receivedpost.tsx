@@ -1,14 +1,12 @@
 import { PostReceived } from "./ui/postReceived";
 import { PostButton } from "./ui/postButton";
-import { ProfileCard, Button, Chat } from "../components/index";
+import { ProfileCard, Button, Chat } from "./index";
 import { use, useEffect, useState } from "react";
 import axios from "axios";
 import { getCookie } from "cookies-next";
 import { UserProfileBox } from "./chat/userProfile";
 import { ColasipbleChatBox } from "./chat/chatBox";
-import { useIsAgainGetDatas } from "../context";
 export const ReceivedPosts = () => {
-	const {isAgainGetDatas} = useIsAgainGetDatas()
 	const [personalPosts, setPersonalPosts] = useState([
 		{
 			subject: "",
@@ -17,44 +15,46 @@ export const ReceivedPosts = () => {
 			pendingRequest: [{ id: "", averageRating: "", email: "" }],
 		},
 	]);
-	const [postIInterested, setPostIInterested] = useState([{ chatRoom: "", subject: "", detail: "" }]);
+	const [postIInterested, setPostIInterested] = useState([
+		{ chatRoom: "", subject: "", detail: "" },
+	]);
 	useEffect(() => {
-    const getPostIInterested = async () => {
-      const token = getCookie("token");
-      try {
-        const datas = await axios.get(
-          "https://backend-leap2-production.up.railway.app/post/postToBeDone",
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
-        setPostIInterested(datas.data.data);
-      } catch (error) {}
-    };
-    getPostIInterested();
-  }, [isAgainGetDatas]);
+		const getPostIInterested = async () => {
+			const token = getCookie("token");
+			try {
+				const datas = await axios.get(
+					"http://localhost:8000/post/postToBeDone",
+					{
+						headers: {
+							Authorization: token,
+						},
+					}
+				);
+				setPostIInterested(datas.data.data);
+			} catch (error) {}
+		};
+		getPostIInterested();
+	}, []);
 	useEffect(() => {
-    const getPersonalData = async () => {
-      const token = getCookie("token");
-      try {
-        const datas = await axios.get("https://backend-leap2-production.up.railway.app/users/posts", {
-          headers: {
-            Authorization: token,
-          },
-        });
-        setPersonalPosts(datas.data.data);
-      } catch (error) {}
-    };
-    getPersonalData();
-  }, [isAgainGetDatas]);
+		const getPersonalData = async () => {
+			const token = getCookie("token");
+			try {
+				const datas = await axios.get("http://localhost:8000/users/posts", {
+					headers: {
+						Authorization: token,
+					},
+				});
+				setPersonalPosts(datas.data.data);
+			} catch (error) {}
+		};
+		getPersonalData();
+	}, []);
 
 	const postedButtonArr = [
 		{
 			textValue: "Edit",
 			style: "#C4FAF8",
-			function: () => {}
+			function: () => console.log("edit"),
 		},
 		{
 			textValue: "Delete",
@@ -63,8 +63,9 @@ export const ReceivedPosts = () => {
 				const button: HTMLButtonElement = el.currentTarget;
 				const id = button.value;
 				axios
-					.delete(`https://backend-leap2-production.up.railway.app/post/${id}`)
+					.delete(`http://localhost:8000/post/${id}`)
 					.then(function (response) {
+						console.log(response);
 					});
 			},
 		},
@@ -73,14 +74,13 @@ export const ReceivedPosts = () => {
 		{
 			textValue: "Submit",
 			style: "#C4FAF8",
-			function: async () => {
-
-			},
+			function: () => console.log("edit"),
 		},
 		{
 			textValue: "Cancel",
 			style: "#FFABAB",
 			function: () => {
+				console.log("canceled");
 			},
 		},
 	];
@@ -120,18 +120,26 @@ export const ReceivedPosts = () => {
 								</div>
 								<div>
 									<h1>Хийх хүсэлтүүд:</h1>
-									{el.worker.id===""&&el.pendingRequest.map((request) => {
+									{el.pendingRequest.map((request) => {
 										return (
 											<div className=' h-fit lg:w-[90%] md:w-[55vw] sm:w-[80%] border border-black rounded-lg flex flex-col p-2 mt-3'>
-												<UserProfileBox request={request} data={el} />
+												<UserProfileBox request={request} />
 											</div>
 										);
 									})}
-									{(el.worker.id!=="")&&
-									<div className=' h-fit lg:w-[90%] md:w-[55vw] sm:w-[80%] border border-black rounded-lg flex flex-col p-2 mt-3'>
-										<h1>Хийх хүн</h1>
-										<UserProfileBox request={el}/>
-									</div>}
+									{el.worker.id && (
+										<div className='bg-yellow-300 flex flex-col'>
+											<h1>Хийх хүн</h1>
+
+											<div className='flex items-center justify-around'>
+												{el.worker.email}{" "}
+												<PostButton
+													data={"Харилцах"}
+													prop={"rgb(225 29 72)"}
+												/>
+											</div>
+										</div>
+									)}
 								</div>
 							</ProfileCard>
 						);
@@ -144,7 +152,7 @@ export const ReceivedPosts = () => {
 							<ProfileCard key={ind}>
 								<PostReceived
 									name={el.subject}
-									owner={"oruulna"}
+									owner={"oruuln"}
 									description={el.detail}
 								/>
 								<div className='flex flex-row flex-wrap'>
@@ -165,7 +173,11 @@ export const ReceivedPosts = () => {
 										}}
 									/>
 								</div>
-								{isChatting ? <ColasipbleChatBox chatRoomName={chatRoom} /> : <></>}
+								{isChatting ? (
+									<ColasipbleChatBox chatRoomName={chatRoom} />
+								) : (
+									<></>
+								)}
 							</ProfileCard>
 						);
 					})}

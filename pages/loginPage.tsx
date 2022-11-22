@@ -1,36 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import loginStyles from "../styles/login.module.css";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useIsUserLoggedContext } from "../context";
+import { useIsAgainGetDatas, useIsUserLoggedContext, useUserContext } from "../context";
 import { setCookie } from "cookies-next";
 import UserProfile from "./profile";
 
 const LoginPage = () => {
 	const [isLogin, setIsLogin] = useState(true);
 	const [userInput, setUserInput] = useState({});
-	const { isLoggedIn } = useIsUserLoggedContext();
-	const router = useRouter();
+	const { isLoggedIn, setIsLoggedIn } = useIsUserLoggedContext();
+	const { setIsAgainGetDatas } = useIsAgainGetDatas();
+	const { setUser, user } = useUserContext();
+	
 	if (isLoggedIn) return <UserProfile />;
 	function takeUserInput(e: any) {
 		setUserInput({ ...userInput, [e.target.name]: e.target.value });
 	}
 	async function login() {
 		await axios
-			.post("https://backend-leap2-production.up.railway.app/users/login", userInput)
+			.post("http://localhost:8000/users/login", userInput)
 			.then(async (response) => {
+				
+					await setUser(response.data.data);
 				await setCookie("token", response.data.token);
-				location.reload();
+				await setIsAgainGetDatas((e:any) => !e);
+				
+				setIsLoggedIn(true);
 			});
 	}
 
 	async function signUp() {
-		await axios
-			.post("https://backend-leap2-production.up.railway.app/users/register", userInput)
-			.then(async (response) => {
-				await setCookie("token", response.data.token);
-				location.reload();
-			});
+		try {
+			await axios
+				.post("http://localhost:8000/users/register", userInput)
+				.then(async (response) => {
+					await setUser(response.data.data);
+					await setCookie("token", response.data.token);
+					await setIsAgainGetDatas((e:any)=>!e)
+					setIsLoggedIn(true);
+				});
+		} catch (error) {
+		}
 	}
 	return (
 		<div className={loginStyles.section}>
@@ -136,6 +147,7 @@ const LoginPage = () => {
 										name='School'
 										id=''
 										onChange={takeUserInput}>
+										<option value=''>Сургууль</option>
 										<option value='NUM'>NUM</option>
 										<option value='UFE'>UFE</option>
 										<option value='MUST'>MUST</option>

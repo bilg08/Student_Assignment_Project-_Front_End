@@ -4,15 +4,14 @@ import {
 	SidebarBox,
 	SidebarBox2,
 	ColasipbleSidebarBox,
-} from "../components/index";
-import { deleteCookie } from "cookies-next";
+} from "./index";
+import { deleteCookie,getCookie } from "cookies-next";
 import { useCollectionContext, useUserContext } from "../context/index";
 import { useEffect, useState } from "react";
-import { getCookie } from "cookies-next";
 import axios from "axios";
 
 export const UserSideBar = () => {
-	const {user,setUser} = useUserContext()
+	const { user, setUser } = useUserContext();
 	const [editing, setEditing] = useState(false);
 	const { cActive, setCactive } = useCollectionContext();
 	const isActive = true;
@@ -20,9 +19,8 @@ export const UserSideBar = () => {
 	useEffect(() => {
 		const getPersonalInfo = async () => {
 			const token = getCookie("token");
-
 			try {
-				const datas = await axios.get("https://backend-leap2-production.up.railway.app/users/myInfo",  {
+				const datas = await axios.get("http://localhost:8000/users/myInfo", {
 					headers: {
 						Authorization: token,
 					},
@@ -32,7 +30,6 @@ export const UserSideBar = () => {
 		};
 		getPersonalInfo();
 	}, []);
-
 
 	return (
 		<>
