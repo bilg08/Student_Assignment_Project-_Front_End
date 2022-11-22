@@ -19,7 +19,7 @@ const LoginPage = () => {
 	}
 	async function login() {
 		await axios
-			.post("http://localhost:8000/users/login", userInput)
+			.post("https://backend-leap2-production.up.railway.app/users/login", userInput)
 			.then(async (response) => {
 				
 					await setUser(response.data.data);
@@ -33,7 +33,7 @@ const LoginPage = () => {
 	async function signUp() {
 		try {
 			await axios
-				.post("http://localhost:8000/users/register", userInput)
+				.post("https://backend-leap2-production.up.railway.app/users/register", userInput)
 				.then(async (response) => {
 					await setUser(response.data.data);
 					await setCookie("token", response.data.token);

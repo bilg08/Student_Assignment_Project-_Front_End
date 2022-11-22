@@ -42,7 +42,7 @@ const postedButtonArr = [
 			const button: HTMLButtonElement = el.currentTarget;
 			const id = button.value;
 			axios
-				.delete(`http://localhost:8000/post/${id}`)
+				.delete(`https://backend-leap2-production.up.railway.app/post/${id}`)
 				.then(function (response) {
 					console.log(response);
 				});
