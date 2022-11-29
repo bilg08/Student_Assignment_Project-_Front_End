@@ -13,6 +13,7 @@ export const LayOut = (props: { children: ReactNode }) => {
   useEffect(() => console.log({ loader, shadow }), [loader, shadow]);
   axios.interceptors.request.use(
     function (config) {
+      console.log(config)
       setOpenLoader(true);
       setOpenshadow(true);
       return config;
@@ -25,6 +26,7 @@ export const LayOut = (props: { children: ReactNode }) => {
   // Add a response interceptor
   axios.interceptors.response.use(
     function (response) {
+      console.log(response)
       setOpenLoader(false);
       setOpenshadow(false);
       return response;
