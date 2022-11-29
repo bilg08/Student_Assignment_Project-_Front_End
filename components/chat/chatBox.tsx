@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { PostButton } from "../ui/postButton";
 import { io } from "socket.io-client";
 import { flushSync } from "react-dom";
-import axios from "axios";
 import { getCookie } from "cookies-next";
 import { useIsAgainGetDatas, useUserContext } from "../../context";
-const connectChatServer = () => {
-	const socket = io("https://backend-leap2-production.up.railway.app/", {
+import { instance } from "../../components/Layout";
+export const connectChatServer = () => {
+	const socket = io("http://localhost:8000/", {
 		transports: ["websocket"],
 	});
 	return socket;
@@ -32,7 +32,7 @@ export const ColasipbleChatBox = ({ chatRoomName }: any) => {
 	useEffect(() => {
 		let socket = connectChatServer();
 		socket.onAny(async (type, message) => {
-			if (message&&type===chatRoomName) {
+			if (message && type === chatRoomName) {
 				await setIsSentMessage((e) => !e);
 				scrollToLastMessage();
 			}
@@ -45,26 +45,17 @@ export const ColasipbleChatBox = ({ chatRoomName }: any) => {
 	useEffect(() => {
 		async function sendChat() {
 			try {
-				await axios.post(
-					`https://backend-leap2-production.up.railway.app/chat/${chatRoomName}/sendMessage`,
-					{ message },
-					{
-						headers: {
-							authorization: getCookie("token"),
-						},
-					}
-				);
+				await instance.post(`/chat/${chatRoomName}/sendMessage`,{message});
 			} catch (error) {}
 		}
 		if (message !== "" && chatRoomName !== "") sendChat();
 	}, [isSentMessage]);
-
 	useEffect(() => {
 		async function getMessages() {
 			setIsAgainGetDatas((e:any)=>!e)
 			try {
-				const data = await axios.get(
-					`https://backend-leap2-production.up.railway.app/chat/${chatRoomName}/getMessages`,
+				const data = await instance.get(
+					`/chat/${chatRoomName}/getMessages`,
 					{
 						headers: {
 							authorization: getCookie("token"),
@@ -91,10 +82,9 @@ export const ColasipbleChatBox = ({ chatRoomName }: any) => {
 	}
 
 	return (
-		<div className='h-48 w-full'>
+		<div className='h-48 w-[100%] '>
 			<div
-				id='convo'
-				className='h-2/3 w-5/6 border border-black rounded-lg
+				className='h-2/3  border border-black rounded-lg
 			 overflow-scroll 
 			  '>
 				<ul ref={listRef}>

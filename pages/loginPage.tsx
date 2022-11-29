@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
-import loginStyles from "../styles/login.module.css";
-import axios from "axios";
-import { useRouter } from "next/router";
-import { useIsAgainGetDatas, useIsUserLoggedContext, useUserContext } from "../context";
 import { setCookie } from "cookies-next";
+import { useState } from "react";
+import { instance } from "../components/Layout";
+import {
+	useIsAgainGetDatas,
+	useIsUserLoggedContext,
+	useUserContext
+} from "../context";
+import loginStyles from "../styles/login.module.css";
 import UserProfile from "./profile";
 
 const LoginPage = () => {
@@ -12,37 +15,35 @@ const LoginPage = () => {
 	const { isLoggedIn, setIsLoggedIn } = useIsUserLoggedContext();
 	const { setIsAgainGetDatas } = useIsAgainGetDatas();
 	const { setUser, user } = useUserContext();
-	
+
 	if (isLoggedIn) return <UserProfile />;
 	function takeUserInput(e: any) {
 		setUserInput({ ...userInput, [e.target.name]: e.target.value });
 	}
 	async function login() {
-		await axios
-			.post("https://backend-leap2-production.up.railway.app/users/login", userInput)
-			.then(async (response) => {
-				await setUser(response.data.data);
-				setCookie('userId',response.data.data._id)
-				await setCookie("token", response.data.token);
-				await setIsAgainGetDatas((e:any) => !e);
-				
-				setIsLoggedIn(true);
-			});
+		await instance
+      .post("/users/login", userInput)
+      .then(async (response) => {
+        await setUser(response.data.data);
+        setCookie("userId", response.data.data._id);
+        await setCookie("token", response.data.token);
+        await setIsAgainGetDatas((e: any) => !e);
+
+        setIsLoggedIn(true);
+      });
 	}
 
 	async function signUp() {
 		try {
-			await axios
-				.post("https://backend-leap2-production.up.railway.app/users/register", userInput)
-				.then(async (response) => {
-					await setUser(response.data.data);
-					await setCookie("token", response.data.token);
-					setCookie('userId',response.data.data._id)
-					await setIsAgainGetDatas((e:any)=>!e)
-					setIsLoggedIn(true);
-				});
-		} catch (error) {
-		}
+			await instance.post("/users/register", userInput)
+        .then(async (response) => {
+          await setUser(response.data.data);
+          await setCookie("token", response.data.token);
+          setCookie("userId", response.data.data._id);
+          await setIsAgainGetDatas((e: any) => !e);
+          setIsLoggedIn(true);
+        });
+		} catch (error) {}
 	}
 	return (
 		<div className={loginStyles.section}>

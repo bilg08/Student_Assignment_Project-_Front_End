@@ -3,12 +3,14 @@ export type SelectedAdContextType = {
     index: any,
     ad: {
       owner: {
-        name: String,
+        name: string,
       },
-      _id:String,
-      advertisingHeader: String,
-      createdAt: String,
-    detail:String
+      _id:string,
+      photo:string,
+      advertisingHeader: string,
+      createdAt: string,
+    detail:string,
+    price:string
     }
   };
   setSelectedAd: (_val: any) => void;

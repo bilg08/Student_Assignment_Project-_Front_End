@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 type Props = {
   children: ReactNode;
@@ -20,9 +20,8 @@ export const ModalContext = createContext<ModalContextType>({
 });
 
 export const ModalContextProvider = ({ children }: Props) => {
-  // Button false or true
   const [isOpenModal, setOpenModal] = useState(false);
-  const [modalText, setModalText] = useState("hahahh");
+  const [modalText, setModalText] = useState("");
   return (
     <ModalContext.Provider
       value={{
