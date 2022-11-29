@@ -5,7 +5,7 @@ import { useLoaderContext } from "../context";
 import { Props } from "../types";
 import { Header, Footer, Modal, Shadow, Loader } from "./index";
 export const instance = axios.create({
-  baseURL: "http://localhost:8000/",
+  baseURL: "https://student-assignment-project-front-end.vercel.app/",
   headers: { Authorization: getCookie("token") },
 });
 export const LayOut = (props: { children: ReactNode }) => {
