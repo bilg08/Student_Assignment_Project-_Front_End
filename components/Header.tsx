@@ -22,7 +22,7 @@ export const Header = () => {
 		const getData = async () =>
 			await axios({
 				method: "get",
-				url: "https://student-assignment-project-front-end.vercel.app/school",
+				url: "http://localhost:8000/school",
 			})
 				.then(async function (response) {
 					setSchools([]);

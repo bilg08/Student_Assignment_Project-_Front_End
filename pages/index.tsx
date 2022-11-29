@@ -10,6 +10,7 @@ import { useWindowWidth } from "../hooks/index";
 import { useModalContext } from "../context/index";
 import { Pagination } from "../components/pagination";
 import {instance} from '../components/Layout'
+import axios from "axios";
 type adsType = {
   _id: string | number | readonly string[] | undefined;
   advertisingHeader: String;
@@ -44,9 +45,9 @@ export default function Home() {
   const {setOpenshadow} = useLoaderContext()
   useEffect(() => {
     async function getData() {
-      await instance
+      await axios
         .get(
-          `/post/?page=${page}&school=${userInput.school}&group=${userInput.group}&subject=${userInput.subject}`
+          `https://backend-leap2-production.up.railway.app/post/?page=1&school=&group=&subject=`
         )
         .then(async function (response) {
           setAds(response.data.data);
