@@ -17,7 +17,7 @@ export const UserSideBar = () => {
 	const [createObjectURL, setCreateObjectURL] = useState<any | null>(null);
 	const [fileSelected, setFileSelected] = useState<any | null>([]);
 	const { setOpenshadow } = useLoaderContext();
-	console.log(`http://localhost:8000/users/getUserProfilePhoto/${user.photo}`)
+	console.log(`https://backend-leap2-production.up.railway.app/users/getUserProfilePhoto/${user.photo}`)
 	const uploadFile = function (e: any) {
 		if (e.target.files && e.target.files[0]) {
 			const i = e.target.files[0];
@@ -80,7 +80,7 @@ export const UserSideBar = () => {
 									{user ? (
 										<img
 											className='h-64 w-64 rounded-full border-dark-purple border-2 mb-16 p-0.5'
-											src={`http://localhost:8000/users/getUserProfilePhoto/${user.photo}`}
+											src={`https://backend-leap2-production.up.railway.app/users/getUserProfilePhoto/${user.photo}`}
 										/>
 									) : (
 										<div className='h-64 w-64 rounded-full border-dark-purple border-2 mb-16 p-0.5 bg-white'></div>

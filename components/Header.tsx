@@ -22,7 +22,7 @@ export const Header = () => {
 		const getData = async () =>
 			await axios({
 				method: "get",
-				url: "http://localhost:8000/school",
+				url: "https://backend-leap2-production.up.railway.app/school",
 			})
 				.then(async function (response) {
 					setSchools([]);

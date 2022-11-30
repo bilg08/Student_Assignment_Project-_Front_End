@@ -161,7 +161,7 @@ export default function Home() {
       <DetailImage
         imageSrc={
           selectedAd &&
-        `http://localhost:8000/post/photo/${selectedAd.ad.photo}`}
+        `https://backend-leap2-production.up.railway.app/post/photo/${selectedAd.ad.photo}`}
       />
       <div>
         <div className="flex h-40  justify-center flex-col items-center md:flex-row m-auto max-w-screen-xl gap-5">
@@ -232,7 +232,7 @@ export default function Home() {
                   className="max-w-sm bg-white border border-mid-purple rounded-lg shadow-md">
                   <img
                     className="rounded-t-lg"
-                    src={`http://localhost:8000/post/photo/${ad.photo}`}
+                    src={`https://backend-leap2-production.up.railway.app/post/photo/${ad.photo}`}
                     alt=""
                   />
                   <div className="p-5">
@@ -259,7 +259,7 @@ export default function Home() {
                 <img
                   onClick={() => setCloseDetailImage(true)}
                   className="rounded-t-lg"
-                  src={selectedAd &&`http://localhost:8000/post/photo/${selectedAd.ad.photo}`}
+                  src={selectedAd &&`https://backend-leap2-production.up.railway.app/post/photo/${selectedAd.ad.photo}`}
                   alt=""
                 />
                 <div className="p-5">
@@ -295,7 +295,7 @@ export default function Home() {
               <img
                 onClick={() => setCloseDetailImage(true)}
                 className="rounded-t-lg"
-                src={selectedAd &&`http://localhost:8000/post/photo/${selectedAd.ad.photo}`}
+                src={selectedAd &&`https://backend-leap2-production.up.railway.app/post/photo/${selectedAd.ad.photo}`}
                 alt=""
               />
               <div className="p-5">
