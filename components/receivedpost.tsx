@@ -2,7 +2,7 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { instance } from "../components/Layout";
-import { SomeCart } from '../components/SomeCart';
+import { SomeCart } from "../components/SomeCart";
 import { useIsAgainGetDatas } from "../context";
 import { useWindowWidth } from "../hooks";
 import { ColasipbleChatBox } from "./chat/chatBox";
@@ -20,15 +20,13 @@ type postType = {
 }[];
 export const ReceivedPosts = () => {
   const [personalPosts, setPersonalPosts] = useState<postType>([]);
-	 const [chosen, setChosen] = useState(true);
-   const [isChatting, setChatting] = useState(false);
-   const [chatRoom, setChatRoom] = useState("");
-   const windowWidth = useWindowWidth();
+  const [chosen, setChosen] = useState(true);
+  const [isChatting, setChatting] = useState(false);
+  const [chatRoom, setChatRoom] = useState("");
+  const windowWidth = useWindowWidth();
   const [loading, setLoading] = useState(false);
-  const [postIInterested, setPostIInterested] = useState<postType>([
-    
-  ]);
-  const { isAgainGetDatas } = useIsAgainGetDatas();
+  const [postIInterested, setPostIInterested] = useState<postType>([]);
+  const { isAgainGetDatas,setIsAgainGetDatas } = useIsAgainGetDatas();
   useEffect(() => {
     const getPostIInterested = async () => {
       try {
@@ -43,12 +41,16 @@ export const ReceivedPosts = () => {
       try {
         const datas = await instance.get(`/users/posts`);
         setPersonalPosts(datas.data.data);
-      } catch (error) {
-      } 
+      } catch (error) {}
     };
     getPostIInterested();
     getPersonalData();
   }, [isAgainGetDatas]);
+  async function deletePost() {
+    await axios
+      .delete(`http://localhost:8000/post/${id}`)
+      .then(function (response) {});
+  }
   const postedButtonArr = [
     {
       textValue: "Edit",
@@ -58,12 +60,12 @@ export const ReceivedPosts = () => {
     {
       textValue: "Delete",
       style: "#FFABAB",
-      function: (el: React.MouseEvent<HTMLButtonElement>) => {
+      function:async (el: React.MouseEvent<HTMLButtonElement>) => {
         const button: HTMLButtonElement = el.currentTarget;
-        const id = button.value;
-        axios
-          .delete(`http://localhost:8000/post/${id}`)
+        await instance
+          .delete(`/post/${button.id}`)
           .then(function (response) {
+            setIsAgainGetDatas((e:boolean) => !e);
           });
       },
     },
@@ -76,15 +78,12 @@ export const ReceivedPosts = () => {
     {
       textValue: "Cancel",
       style: "#FFABAB",
-      function: () => {
-      },
+      function: () => {},
     },
   ];
- 
 
   return (
     <div className="flex-col items-center lg:w-4/6 md:w-full xs:w-full h-[100%]  m-auto overflow-auto h-screen  overscroll-y-scroll">
-      {loading && <h1>LOADING ...</h1>}
       <div className=" h-[50px] pl-4 pr-2 z-10 bg-white flex justify-between items-end">
         {windowWidth >= 950 ? (
           <div className=" h-[50px] w-[35vw]  pr-2 z-10 bg-white flex justify-evenly items-end">
@@ -110,25 +109,31 @@ export const ReceivedPosts = () => {
           </Button>
         )}
       </div>
-      {chosen && !loading ? (
-        <div className="overscroll-y-none   flex-col flex items-center pb-[100px]">
+      {chosen ? (
+        <div className="overscroll-y-none  flex-col flex items-center pb-[100px]">
           {personalPosts?.map((el, ind) => {
             return (
-              <SomeCart type={el.isDone===true?'done':'notDone'} key={ind}>
+              <SomeCart
+                type={el.isDone === true ? "done" : "notDone"}
+                key={ind}>
                 <PostReceived
                   name={el.subject}
                   owner={"oruuln"}
                   description={el.detail}
                 />
                 <div className="flex flex-row flex-wrap">
-                  {postedButtonArr?.map((el, index): any => (
-                    <PostButton
-                      key={index}
-                      data={el.textValue}
-                      prop={el.style}
-                      ym={el.function}
-                    />
-                  ))}
+                  {postedButtonArr?.map(
+                    (button, index): any =>
+                      !el.isDone && (
+                        <PostButton
+                          key={index}
+                          id={el._id}
+                          data={button.textValue}
+                          prop={button.style}
+                          ym={button.function}
+                        />
+                      )
+                  )}
                 </div>
                 {!el.isDone ? (
                   <div>
@@ -159,8 +164,8 @@ export const ReceivedPosts = () => {
           })}
         </div>
       ) : (
-        <div className="overscroll-y-none   flex-col flex items-center pb-[100px]">
-            {postIInterested.map((el, ind) => {
+        <div className="overscroll-y-none  flex-col flex items-center pb-[100px]">
+          {postIInterested.map((el, ind) => {
             return (
               <SomeCart
                 type={el.isDone === true ? "done" : "notDone"}
@@ -172,12 +177,12 @@ export const ReceivedPosts = () => {
                 />
                 <div style={{ display: el.isDone ? "none" : "block" }}>
                   <div className="flex flex-row flex-wrap">
-                    {buttonArr?.map((el, index): any => (
+                    {buttonArr?.map((button, index): any => (
                       <PostButton
                         key={index}
-                        data={el.textValue}
-                        prop={el.style}
-                        ym={el.function}
+                        data={button.textValue}
+                        prop={button.style}
+                        ym={button.function}
                       />
                     ))}
                     <PostButton

@@ -18,8 +18,7 @@ export * from './ui/myImage';
 export * from './profileCard';
 export * from './chat';
 export * from './modal';
-export * from './rating';
-export * from './Loader'
+export * from './rating'
 
 
 

@@ -1,156 +1,172 @@
 import { useEffect, useState } from "react";
 import { Shadow, PostButton, Button } from "../components/index";
 import {
-  useSelectedContext,
-  useIsAgainGetDatas,
-  useSearchContext,
-  useLoaderContext,
+	useSelectedContext,
+	useIsAgainGetDatas,
+	useSearchContext,
+	useLoaderContext,
+  useIsUserLoggedContext,
 } from "../context/index";
 import { useWindowWidth } from "../hooks/index";
 import { useModalContext } from "../context/index";
 import { Pagination } from "../components/pagination";
-import {instance} from '../components/Layout'
-import axios from "axios";
+import { instance } from "../components/Layout";
+import { getCookie } from "cookies-next";
 type adsType = {
-  _id: string | number | readonly string[] | undefined;
-  advertisingHeader: String;
-  detail: String;
-  owner: {
-    name: String;
-    image: String | any;
-  };
-  createdAt: String;
-  photo?: string;
-  price?: string;
+	_id: string | number | readonly string[] | undefined;
+	advertisingHeader: String;
+	detail: String;
+	owner: {
+		name: String;
+		image: String | any;
+	};
+  isDone:boolean;
+	createdAt: String;
+	photo?: string;
+	price?: string;
 };
 
 
-
-// Add a response interceptor
-
 export default function Home() {
-  const { selectedAd, setSelectedAd } = useSelectedContext();
-  const { setModalText, setOpenModal } = useModalContext();
-  const [ads, setAds] = useState<adsType[]>([]);
-  const windowWidth = useWindowWidth();
-  const [showModal, setShowModal] = useState(false);
-  const { isAgainGetDatas, setIsAgainGetDatas } = useIsAgainGetDatas();
-  const [page, setPage] = useState<number>(1);
-  const [pagination, setPagination] = useState({ pageCount: 0 });
-  const [closeDetailImage, setCloseDetailImage] = useState<boolean>(false);
-  const { userInput, setUserInput } = useSearchContext();
-  const [schools, setSchools] = useState<any>([]);
-  const [schoolLessons, setSchoolLessons] = useState([]);
-  const [schoolGroup, setSchoolGroup] = useState<any>([]);
-  const {setOpenshadow} = useLoaderContext()
-  useEffect(() => {
-    async function getData() {
-      await axios
-        .get(
-          `https://backend-leap2-production.up.railway.app/post/?page=1&school=&group=&subject=`
-        )
-        .then(async function (response) {
-          setAds(response.data.data);
-          setPagination(response.data.pagination);
-        })
-			.catch(function (response) { });
-		await instance.get("/school")
-        .then(async function (response) {
-          setSchools([]);
-          response.data.data.map(
-            (school: { school: ""; ROOT: { group: [] } }) => {
-              setSchools((schools: any) => [
-                ...schools,
-                {
-                  name: school.school,
-                  groupAndThatGrouplessons: school.ROOT.group,
-                },
-              ]);
-            }
-          );
-        })
-        .catch(function (response) {});
-    }
+	const { selectedAd, setSelectedAd } = useSelectedContext();
+	const { setModalText, setOpenModal } = useModalContext();
+	const [ads, setAds] = useState<adsType[]>([]);
+	const windowWidth = useWindowWidth();
+	const [showModal, setShowModal] = useState(false);
+	const { isAgainGetDatas, setIsAgainGetDatas } = useIsAgainGetDatas();
+	const [page, setPage] = useState<number>(1);
+	const [pagination, setPagination] = useState({ pageCount: 0 });
+	const [closeDetailImage, setCloseDetailImage] = useState<boolean>(false);
+	const { userInput, setUserInput } = useSearchContext();
+	const [schools, setSchools] = useState<any>([]);
+	const [schoolLessons, setSchoolLessons] = useState([]);
+	const [schoolGroup, setSchoolGroup] = useState<any>([]);
+	const { setOpenshadow } = useLoaderContext();
+  const {isLoggedIn} = useIsUserLoggedContext();
+	useEffect(() => {
+		async function getData() {
+      const userId = getCookie('userId');
+      if(!isLoggedIn){
+        await instance
+				.get(
+					`/post/?page=${page}&school=${userInput.school}&group=${userInput.group}&subject=${userInput.subject}`,
+				)
+				.then(async function (response:any) {
+					setAds(response.data.data);
+					setPagination(response.data.pagination);
+				})
+      }else{
+        await instance
+				.get(
+					`/post/?page=${page}&school=${userInput.school}&group=${userInput.group}&subject=${userInput.subject}`,
+				)
+				.then(async function (response:any) {
 
-    getData();
-    return () => {
-      getData();
-    };
-  }, [isAgainGetDatas, page]);
-
-  useEffect(() => {
-    schools.map((school1: any) => {
-      if (school1.name === userInput.school) {
-        school1.groupAndThatGrouplessons.map((group: any) =>
-          setSchoolGroup((prev: any) => [...prev, group.GroupName])
-        );
+          const postNotIncludedUser = response.data.data.filter((post:{owner:string})=>(post.owner!==userId))
+					setAds(postNotIncludedUser);
+					setPagination(response.data.pagination);
+				})
+				.catch(function (response:any) {});
       }
-    });
-  }, [userInput.school, userInput.group]);
-  useEffect(() => {
-    schools.map((school1: any) => {
-      if (school1.name === userInput.school) {
-        school1.groupAndThatGrouplessons.map((group1: any) => {
-          if (group1.GroupName === userInput.group) {
-            setSchoolLessons(group1.course);
-          }
-        });
-      }
-    });
-  }, [userInput.group]);
-  const requestToDoWork = async (id: String) => {
-	  await instance.post(`/post/${id}/work`)
-      .then(async function (response) {
-        setOpenshadow(true);
-        await setModalText("amjilttai");
-        setOpenModal(true);
-      })
-      .catch(async function (error) {
-        setOpenshadow(true)
-        await setModalText(error.response.data.data);
-        setOpenModal(true);
-      });
-  };
-  const handleSearch = () => {
-    setIsAgainGetDatas((e: boolean) => !e);
-  };
-  const DetailImage = (props: { imageSrc: string }) => {
-    return (
-      <div
-        style={{ display: selectedAd && closeDetailImage ? "flex" : "none" }}
-        className="w-[100%] h-[150vh] bg-grey/3 backdrop-blur-xl absolute z-30">
-        <button
-          onClick={() => setCloseDetailImage(false)}
-          className="absolute w-8 h-8 mt-3 ml-3 bg-gray-200 rounded-full">
-          X
-        </button>
-        <div className="w-[100%] h-[auto] justify-self-center">
-          <img
-            style={{
-              margin: `auto`,
-              width: "80%",
-              height: "auto",
-              marginTop: "3vw",
-            }}
-            src={selectedAd && props.imageSrc}
-          />
-        </div>
-      </div>
-    );
-  };
+			
+			await instance
+				.get("/school")
+				.then(async function (response:any) {
+					setSchools([]);
+					response.data.data.map(
+						(school: { school: ""; ROOT: { group: [] } }) => {
+							setSchools((schools: any) => [
+								...schools,
+								{
+									name: school.school,
+									groupAndThatGrouplessons: school.ROOT.group,
+								},
+							]);
+						}
+					);
+				})
+				.catch(function (response:any) {});
+		}
 
-  return (
+		getData();
+		return () => {
+			getData();
+		};
+	}, [isAgainGetDatas, page,isLoggedIn]);
+
+	useEffect(() => {
+		schools.map((school1: any) => {
+			if (school1.name === userInput.school) {
+				school1.groupAndThatGrouplessons.map((group: any) =>
+					setSchoolGroup((prev: any) => [...prev, group.GroupName])
+				);
+			}
+		});
+	}, [userInput.school, userInput.group]);
+	useEffect(() => {
+		schools.map((school1: any) => {
+			if (school1.name === userInput.school) {
+				school1.groupAndThatGrouplessons.map((group1: any) => {
+					if (group1.GroupName === userInput.group) {
+						setSchoolLessons(group1.course);
+					}
+				});
+			}
+		});
+	}, [userInput.group]);
+	const requestToDoWork = async (id: String) => {
+		await instance
+			.post(`/post/${id}/work`)
+			.then(async function (response:any) {
+				setOpenshadow(true);
+				await setModalText("amjilttai");
+				setOpenModal(true);
+			})
+			.catch(async function (error:any) {
+				setOpenshadow(true);
+				await setModalText(error.response.data.data);
+				setOpenModal(true);
+			});
+	};
+	const handleSearch = () => {
+		setIsAgainGetDatas((e: boolean) => !e);
+	};
+	const DetailImage = (props: { imageSrc: string }) => {
+		return (
+			<div
+				style={{ display: selectedAd && closeDetailImage ? "flex" : "none" }}
+				className='w-[100%] h-[150vh] bg-grey/3 backdrop-blur-xl absolute z-30'>
+				<button
+					onClick={() => setCloseDetailImage(false)}
+					className='absolute w-8 h-8 mt-3 ml-3 bg-gray-200 rounded-full'>
+					X
+				</button>
+				<div className='w-[100%] h-[auto] justify-self-center'>
+					<img
+						style={{
+							margin: `auto`,
+							width: "80%",
+							height: "auto",
+							marginTop: "3vw",
+						}}
+						src={selectedAd && props.imageSrc}
+					/>
+				</div>
+			</div>
+		);
+	};
+
+	return (
     <div className="w-full border-#57534e border-1">
       <DetailImage
         imageSrc={
           selectedAd &&
-          `https://images.pexels.com/photos/167682/pexels-photo-167682.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2`
-        }
+        `http://localhost:8000/post/photo/${selectedAd.ad.photo}`}
       />
       <div>
         <div className="flex h-40  justify-center flex-col items-center md:flex-row m-auto max-w-screen-xl gap-5">
           <select
-            className="block appearance-none w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 mb-3 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            className="block w-full bg-white border border-dark-purple text-dark-purple py-3 px-4 pr-8 rounded-3xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             id="grid-state"
             name="school"
             onChange={async (e) => {
@@ -159,6 +175,7 @@ export default function Home() {
                 [e.target.name]: e.target.value,
               });
             }}>
+            <option value="">Сургууль</option>
             {schools.map((school: { name: "" }, i: number) => (
               <option value={school.name} key={school.name + i}>
                 {school.name}
@@ -166,7 +183,7 @@ export default function Home() {
             ))}
           </select>
           <select
-            className="block appearance-none w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            className="block w-full bg-white border border-dark-purple text-dark-purple py-3 px-4 pr-8 rounded-3xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             id="grid-state"
             onChange={async (e) => {
               await setUserInput({
@@ -175,12 +192,13 @@ export default function Home() {
               });
             }}
             name="group">
+            <option value="">Бүлэг</option>
             {schoolGroup?.map((group: string, i: string) => (
               <option key={group + i}>{group}</option>
             ))}
           </select>
           <select
-            className="block appearance-none w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 mb-3 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            className="block w-full bg-white border border-dark-purple text-dark-purple py-3 px-4 pr-8 rounded-3xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             id="grid-state"
             onChange={async (e) => {
               await setUserInput({
@@ -189,26 +207,13 @@ export default function Home() {
               });
             }}
             name="subject">
+            <option value="">Хичээл</option>
             {schoolLessons?.map((schoolLesson: any, i: number) => {
               return (
                 <option key={schoolLesson + i}>{schoolLesson.subject}</option>
               );
             })}
           </select>
-          {/* <Input
-									placeholder='Сургууль'
-									onchange={setUserinput}
-									userInput={userinput}
-									icon={<AiOutlineSearch />}
-									name='school'
-								/> */}
-          {/* <Input
-                  placeholder="Хичээл"
-                  onchange={setUserinput}
-                  userInput={userinput}
-                  name="subject"
-                  icon={<MdLocationOn />}
-                /> */}
           <Button onClick={handleSearch}>Хайх</Button>
         </div>
       </div>
@@ -227,7 +232,7 @@ export default function Home() {
                   className="max-w-sm bg-white border border-mid-purple rounded-lg shadow-md">
                   <img
                     className="rounded-t-lg"
-                    src="https://images.pexels.com/photos/167682/pexels-photo-167682.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                    src={`http://localhost:8000/post/photo/${ad.photo}`}
                     alt=""
                   />
                   <div className="p-5">
@@ -254,7 +259,7 @@ export default function Home() {
                 <img
                   onClick={() => setCloseDetailImage(true)}
                   className="rounded-t-lg"
-                  src="https://images.pexels.com/photos/167682/pexels-photo-167682.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                  src={selectedAd &&`http://localhost:8000/post/photo/${selectedAd.ad.photo}`}
                   alt=""
                 />
                 <div className="p-5">
@@ -290,7 +295,7 @@ export default function Home() {
               <img
                 onClick={() => setCloseDetailImage(true)}
                 className="rounded-t-lg"
-                src="https://images.pexels.com/photos/167682/pexels-photo-167682.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                src={selectedAd &&`http://localhost:8000/post/photo/${selectedAd.ad.photo}`}
                 alt=""
               />
               <div className="p-5">

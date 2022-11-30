@@ -1,14 +1,16 @@
 import axios from "axios";
 import { getCookie } from "cookies-next";
 import React, { ReactNode } from "react";
-import { useLoaderContext } from "../context";
-import { Header, Footer, Modal, Shadow, Loader } from "./index";
+import { useLoaderContext, useUserContext } from "../context";
+import { Header, Footer, Modal } from "./index";
+import { Loader } from "./Loader";
 export const instance = axios.create({
-  baseURL: "http://localhost:8000/",
-  headers: { Authorization: getCookie("token") },
+  baseURL: "https://backend-leap2-production.up.railway.app/",
+  headers: { Authorization: getCookie("token"),userId:getCookie('userId') },
 });
 export const LayOut = (props: { children: ReactNode }) => {
-  const { setOpenLoader, setOpenshadow, loader, shadow } = useLoaderContext();
+  const { setOpenLoader, setOpenshadow } = useLoaderContext();
+  
   axios.interceptors.request.use(
     function (config) {
       setOpenLoader(true);
@@ -20,7 +22,6 @@ export const LayOut = (props: { children: ReactNode }) => {
     }
   );
 
-  // Add a response interceptor
   axios.interceptors.response.use(
     function (response) {
       setOpenLoader(false);
@@ -36,7 +37,6 @@ export const LayOut = (props: { children: ReactNode }) => {
       <Modal />
       <Header />
       {props.children}
-      <Shadow/>
       <Loader />
       <Footer />
     </div>

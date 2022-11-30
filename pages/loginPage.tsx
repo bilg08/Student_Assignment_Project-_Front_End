@@ -15,7 +15,6 @@ const LoginPage = () => {
 	const { isLoggedIn, setIsLoggedIn } = useIsUserLoggedContext();
 	const { setIsAgainGetDatas } = useIsAgainGetDatas();
 	const { setUser, user } = useUserContext();
-
 	if (isLoggedIn) return <UserProfile />;
 	function takeUserInput(e: any) {
 		setUserInput({ ...userInput, [e.target.name]: e.target.value });
@@ -23,25 +22,28 @@ const LoginPage = () => {
 	async function login() {
 		await instance
       .post("/users/login", userInput)
-      .then(async (response) => {
+      .then(async (response:any) => {
         await setUser(response.data.data);
         setCookie("userId", response.data.data._id);
         await setCookie("token", response.data.token);
         await setIsAgainGetDatas((e: any) => !e);
 
         setIsLoggedIn(true);
+		location.reload()
       });
 	}
 
 	async function signUp() {
 		try {
 			await instance.post("/users/register", userInput)
-        .then(async (response) => {
+        .then(async (response:any) => {
           await setUser(response.data.data);
           await setCookie("token", response.data.token);
           setCookie("userId", response.data.data._id);
           await setIsAgainGetDatas((e: any) => !e);
           setIsLoggedIn(true);
+		location.reload()
+
         });
 		} catch (error) {}
 	}
