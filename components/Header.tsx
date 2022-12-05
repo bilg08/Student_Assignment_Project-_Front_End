@@ -29,7 +29,7 @@ export const Header = () => {
 		const getData = async () =>
 			await axios({
 				method: "get",
-				url: "http://localhost:8000/school",
+				url: "https://backend-leap2-production.up.railway.app/school",
 			})
 				.then(async function (response) {
 					setSchools([]);
@@ -109,7 +109,7 @@ export const Header = () => {
 								}}
 								style={{ display: isLoggedIn ? "block" : "none" }}
 								className='h-12 w-12 rounded-full border-dark-purple border-2 mb-4'
-								src={`http://localhost:8000/users/getUserProfilePhoto/${user.photo}`}
+								src={`https://backend-leap2-production.up.railway.app/users/getUserProfilePhoto/${user.photo}`}
 							/>
 							<Menu
 								anchorEl={anchorEl}

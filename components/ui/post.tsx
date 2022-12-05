@@ -28,7 +28,7 @@ export const Post: React.FC<PostListProps> = ({ data }) => {
 				const button: HTMLButtonElement = el.currentTarget;
 				const id = button.value;
 				axios
-					.delete(`http://localhost:8000/post/${id}`)
+					.delete(`https://backend-leap2-production.up.railway.app/post/${id}`)
 					.then(function (response) {
 					});
 			},
@@ -48,7 +48,7 @@ export const Post: React.FC<PostListProps> = ({ data }) => {
 									</h2>
 								</div>
 								<img
-									src={`http://localhost:8000/post/photo/${e.photo}`}
+									src={`https://backend-leap2-production.up.railway.app/post/photo/${e.photo}`}
 									className='flex items-center justify-center'
 								/>
 								<p className='mt-3 text-gray-700 text-sm'>{e.detail}</p>

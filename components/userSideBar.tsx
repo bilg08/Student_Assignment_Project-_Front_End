@@ -84,7 +84,7 @@ export const UserSideBar = () => {
 							<li className='flex justify-center'>
 								<img
 									className='h-48 w-48 rounded-full border-dark-purple border-2 mb-4 p-0.5'
-									src={`http://localhost:8000/users/getUserProfilePhoto/${user.photo}`}
+									src={`https://backend-leap2-production.up.railway.app/getUserProfilePhoto/${user.photo}`}
 								/>
 								<svg
 									onClick={() => {

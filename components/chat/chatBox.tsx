@@ -7,7 +7,7 @@ import { useIsAgainGetDatas, useUserContext } from "../../context";
 import { instance } from "../../components/Layout";
 import { Chip } from "@mui/material";
 export const connectChatServer = () => {
-	const socket = io("http://localhost:8000/", {
+	const socket = io("https://backend-leap2-production.up.railway.app/", {
 		transports: ["websocket"],
 	});
 	return socket;

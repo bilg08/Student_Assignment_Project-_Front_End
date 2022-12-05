@@ -158,7 +158,7 @@ export default function Home() {
             }}
             src={
               selectedAd &&
-              `http://localhost:8000/post/photo/${selectedAd.ad.photo}`
+              `https://backend-leap2-production.up.railway.app/post/photo/${selectedAd.ad.photo}`
             }
           />
         </Grid>
@@ -334,7 +334,7 @@ export default function Home() {
                   component="img"
                   height="140"
                   sx={{ borderRadius: "10px" }}
-                  image={`http://localhost:8000/post/photo/${selectedAd.ad.photo}`}
+                  image={`https://backend-leap2-production.up.railway.app/photo/${selectedAd.ad.photo}`}
                 />
                 <CardContent>
                   <Typography
@@ -376,7 +376,7 @@ export default function Home() {
                   component="img"
                   height="140"
                   sx={{ borderRadius: "10px" }}
-                  image={`http://localhost:8000/post/photo/${selectedAd.ad.photo}`}
+                  image={`https://backend-leap2-production.up.railway.app/post/photo/${selectedAd.ad.photo}`}
                 />
                 <CardContent>
                   <Typography
