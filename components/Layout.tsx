@@ -5,7 +5,7 @@ import { useLoaderContext, useUserContext } from "../context";
 import { Header, Footer, Modal } from "./index";
 import { Loader } from "./Loader";
 export const instance = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "https://backend-leap2-production.up.railway.app/",
   headers: { Authorization: getCookie("token"),userId:getCookie('userId') },
 });
 export const LayOut = (props: { children: ReactNode }) => {
