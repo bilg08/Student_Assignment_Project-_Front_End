@@ -22,7 +22,7 @@ const LoginPage = () => {
 	async function login() {
 		await instance
       .post("/users/login", userInput)
-      .then(async (response:any) => {
+      .then(async (response) => {
         await setUser(response.data.data);
         setCookie("userId", response.data.data._id);
         await setCookie("token", response.data.token);
@@ -36,7 +36,7 @@ const LoginPage = () => {
 	async function signUp() {
 		try {
 			await instance.post("/users/register", userInput)
-        .then(async (response:any) => {
+        .then(async (response) => {
           await setUser(response.data.data);
           await setCookie("token", response.data.token);
           setCookie("userId", response.data.data._id);
