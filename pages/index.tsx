@@ -60,7 +60,9 @@ export default function Home() {
           );
           setAds(response.data.data);
           setPagination(response.data.pagination);
-        } catch (error) {}
+        } catch (error) {
+          console.log(error)
+        }
       } else {
         try {
           const response = await instance.get(
@@ -69,7 +71,7 @@ export default function Home() {
           setAds(response.data.data);
           setPagination(response.data.pagination);
         } catch (error) {
-          console.error(error);
+          console.log(error);
         }
       }
       await instance

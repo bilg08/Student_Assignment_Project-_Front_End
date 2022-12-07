@@ -47,7 +47,9 @@ export const Header = () => {
 						}
 					);
 				})
-				.catch(function (response) {});
+				.catch(function (response) {
+					console.log(response)
+				});
 		getData();
 		return () => {
 			getData();
