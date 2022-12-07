@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import InputLabel from "@mui/material/InputLabel";
 import Button from "@mui/material/Button";
 import Backdrop from "@mui/material/Backdrop";
-import { Note } from "../components/SomeCart";
+import cn from "classnames";
 import {
   useSelectedContext,
   useIsAgainGetDatas,
@@ -15,22 +11,25 @@ import {
   useLoaderContext,
   useIsUserLoggedContext,
 } from "../context/index";
-import { useWindowWidth } from "../hooks/index";
 import { useModalContext } from "../context/index";
 import { Pagination1 } from "../components/pagination";
 import { instance } from "../components/Layout";
-import { getCookie } from "cookies-next";
 import { MenuItem, Select } from "@mui/material";
-import { CleaningServices } from "@mui/icons-material";
-import { log } from "console";
+import { IconArrow } from "../components/Icon/IconArrow";
+import { TroubleshootOutlined } from "@mui/icons-material";
 type adsType = {
   _id: string | number | readonly string[] | undefined;
   advertisingHeader: String;
-  detail: String;
+  detail: string;
   owner: {
-    name: String;
-    image: String | any;
+    FirstName: string;
+    LastName: string;
+    photo: string;
+    _id: string;
   };
+  school: string;
+  subject: string;
+  group: string;
   isDone: boolean;
   createdAt: String;
   photo?: string;
@@ -41,7 +40,6 @@ export default function Home() {
   const { selectedAd, setSelectedAd } = useSelectedContext();
   const { setModalText, setOpenModal } = useModalContext();
   const [ads, setAds] = useState<adsType[]>([]);
-  const windowWidth = useWindowWidth();
   const [showModal, setShowModal] = useState(false);
   const { isAgainGetDatas, setIsAgainGetDatas } = useIsAgainGetDatas();
   const [page, setPage] = useState<number>(1);
@@ -53,9 +51,7 @@ export default function Home() {
   const [schoolGroup, setSchoolGroup] = useState<any>([]);
   const { setOpenshadow } = useLoaderContext();
   const { isLoggedIn } = useIsUserLoggedContext();
-
   useEffect(() => {
-    const userId = getCookie("userId");
     (async () => {
       if (!isLoggedIn) {
         try {
@@ -70,7 +66,6 @@ export default function Home() {
           const response = await instance.get(
             `/post/?page=${page}&school=${userInput.school}&group=${userInput.group}&subject=${userInput.subject}`
           );
-          console.log(response);
           setAds(response.data.data);
           setPagination(response.data.pagination);
         } catch (error) {
@@ -117,7 +112,7 @@ export default function Home() {
       }
     });
   }, [userInput.group]);
-  const requestToDoWork = async (id: String) => {
+  async function requestToDoWork  (id: String)  {
     await instance
       .post(`/post/${id}/work`)
       .then(async function (response) {
@@ -167,21 +162,23 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full border-#57534e border-1">
-      <Grid className="flex h-auto  justify-center flex-col items-center md:flex-row m-auto max-w-screen-xl gap-5">
+    <div className="w-full  border-#57534e border-1">
+      <Grid className="flex h-auto w-full m-auto justify-center flex-col items-center md:flex-row  max-w-screen-xl gap-5">
+    
         <Grid
+          className="max-w-screen-xl flex justify-between"
           container
-          gap={5}
           sx={{
-            width: "100%",
-            height: "100%",
+            width: {sm:'100%',xs:'100%',md:'95%',lg:'100%'},
+            height: 'auto',
             display: "flex",
+            margin:'auto',
             alignItems: "center",
-            justifyContent: "center",
-            flexFlow: { xs: "column", sm: "row" },
+            gap:{sm:'20px'},
+            flexFlow: { xs: "column", sm: "row", },
           }}
         >
-          <Grid md={3} className="w-5/6" item>
+          <Grid md={3}  className="w-5/6 " item>
             <InputLabel className="font-bold" id="demo-simple-select-label">
               Сургууль
             </InputLabel>
@@ -203,7 +200,7 @@ export default function Home() {
               ))}
             </Select>
           </Grid>
-          <Grid md={3} className="w-5/6 " item>
+          <Grid md={3} className="w-5/6" item>
             <InputLabel className="font-bold" id="demo-simple-select-label">
               Бүлэг
             </InputLabel>
@@ -269,156 +266,133 @@ export default function Home() {
           sx={{
             position: "relative",
             display: "flex",
-            justifyContent: "space-between",
             maxWidth: "1300px",
-            margin: "auto",
             height: "auto",
+            margin: "auto",
+            gap:'15px',
+            flexWrap: 'wrap',
+            justifyContent:{md:'center',lg:'space-between',sm:'center',xs:'center'}
           }}
         >
-          <Grid
-            item
-            sx={{
-              display: "flex",
-              width: { xs: "100%", md: "50%", xl: "50%" },
-              alignItems: { xs: "center", md: "start" },
-              flexDirection: "column",
-              gap: "20px",
-            }}
-          >
+         
             {ads.map((ad, index) => {
               return (
                 <Grid
+                  sx={{width:'auto'}}
                   key={index}
                   onClick={() => {
                     setSelectedAd({ ad, index });
-                    setShowModal(true);
                   }}
-                  className=" bg-indigo-100 pt-8 pb-4 px-5 shadow-indigo-300/50 shadow-xl sm:px-8 my-8 w-5/6 relative rounded-none shadow-inner -mx-5 sm:mx-auto sm:rounded-lg flex-wrap"
                 >
-                  <CardContent>
-                    <Typography
-                      gutterBottom
-                      className="font-bold"
-                      variant="h5"
-                      component="div"
-                    >
-                      {ad.advertisingHeader}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      className="font-bold"
-                      color="text.secondary"
-                    >
-                      {ad.detail}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button
-                      onClick={() => handleSearch()}
-                      size="small"
-                      style={{ padding: "6px 16px" }}
-                      className="bg-sky-500 text-white"
-                    >
-                      Дэлгэрэнгүй
-                    </Button>
-                  </CardActions>
+                  <PostCart ad={ad}/>
+             
                 </Grid>
               );
             })}
-          </Grid>
-          <Grid sx={{ width: "50%" }}>
-            {selectedAd && windowWidth > 900 && (
-              <Note>
-                <CardMedia
-                  onClick={() => setCloseDetailImage(true)}
-                  component="img"
-                  height="140"
-                  sx={{ borderRadius: "10px" }}
-                  image={`https://backend-leap2-production.up.railway.app/photo/${selectedAd.ad.photo}`}
-                />
-                <CardContent>
-                  <Typography
-                    className="text-indigo-500 font-bold"
-                    gutterBottom
-                    variant="h5"
-                    component="div"
-                  >
-                    {selectedAd.ad.advertisingHeader}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    className="text-xl font-bold"
-                    color="text.secondary"
-                  >
-                    {selectedAd.ad.detail}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    sx={{ padding: "6px 15px" }}
-                    className="bg-indigo-600 text-white rounded-lg"
-                    onClick={() => requestToDoWork(selectedAd.ad._id)}
-                    color="primary"
-                  >
-                    Хийх
-                  </Button>
-                </CardActions>
-              </Note>
-            )}
-          </Grid>
+        
         </Grid>
-        {selectedAd && showModal && windowWidth < 900 && (
-          <Backdrop sx={{ zIndex: 100 }} open={true}>
-            <div style={{ width: "80%" }}>
-              <Note>
-                <CardMedia
-                  onClick={() => setCloseDetailImage(true)}
-                  component="img"
-                  height="140"
-                  sx={{ borderRadius: "10px" }}
-                  image={`https://backend-leap2-production.up.railway.app/post/photo/${selectedAd.ad.photo}`}
-                />
-                <CardContent>
-                  <Typography
-                    className="text-indigo-500 font-bold"
-                    gutterBottom
-                    variant="h5"
-                    component="div"
-                  >
-                    {selectedAd.ad.advertisingHeader}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    className="text-xl font-bold"
-                    color="text.secondary"
-                  >
-                    {selectedAd.ad.detail}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    sx={{ padding: "6px 15px" }}
-                    className="bg-indigo-600 text-white rounded-lg"
-                    onClick={() => requestToDoWork(selectedAd.ad._id)}
-                    color="primary"
-                  >
-                    Хийх
-                  </Button>
-                  <Button
-                    sx={{ padding: "6px 15px" }}
-                    className="bg-indigo-600 text-white rounded-lg"
-                    onClick={() => setShowModal(false)}
-                    color="primary"
-                  >
-                    Гарах
-                  </Button>
-                </CardActions>
-              </Note>
-            </div>
-          </Backdrop>
-        )}
+     
       </Grid>
       <Pagination1 pagination={pagination} setPage={setPage} page={page} />
     </div>
   );
 }
+
+
+function PostCart({ad}:{ad:any}) {
+  const [readMore,setReadMore] = useState(false)
+  const { setOpenshadow } = useLoaderContext();
+  const { setModalText, setOpenModal } = useModalContext();
+
+  async function requestToDoWork  (id: String)  {
+    await instance
+      .post(`/post/${id}/work`)
+      .then(async function (response) {
+        setOpenshadow(true);
+        await setModalText("amjilttai");
+        setOpenModal(true);
+      })
+      .catch(async function (error) {
+        setOpenshadow(true);
+        await setModalText(error.response.data.data);
+        setOpenModal(true);
+      });
+  };
+  return (
+    <div className="px-5 py-4 bg-white w-[400px] shadow-2xl rounded-lg max-w-lg">
+      <div className="flex mb-4">
+        <img
+          className="w-12 h-12 rounded-full"
+          src={`https://backend-leap2-production.up.railway.app/users/getUserProfilePhoto/${ad.owner.photo}`}
+        />
+        <div className="ml-2 mt-0.5">
+          <span className="block font-medium text-base leading-snug text-black ">
+            {ad.owner.FirstName}
+          </span>
+          <span className="block text-sm text-gray-500 dark:text-gray-400 font-light leading-snug">
+            16 December at 08:25
+          </span>
+        </div>
+      </div>
+      <div className="text-gray-800 0 flex gap-[10px] leading-snug md:leading-normal">
+        <a
+          className={cn(
+            "inline text-code bg-blue-100  text-secondary dark:text-secondary-dark px-1 rounded-md no-underline"
+          )}>
+          {ad.school}
+        </a>
+
+        <a
+          className={cn(
+            "inline text-code bg-blue-100  text-secondary dark:text-secondary-dark px-1 rounded-md no-underline"
+          )}>
+          {ad.subject}
+        </a>
+      </div>
+      <p
+        className={` text-gray-800 overflow-hidden transition-all    leading-snug md:leading-normal`}>
+        {ad.detail.length > 50 ? (
+          <>
+            {!readMore ? (
+              <>
+                <p>{ad.detail.slice(0, 50)}</p>
+                <a
+                  onClick={() => setReadMore(true)}
+                  className="underline text-blue-500">
+                  Цааш нь унших
+                </a>
+              </>
+            ) : (
+              <>
+                <p>{ad.detail}</p>
+                <a
+                  onClick={() => setReadMore(false)}
+                  className="underline text-blue-500">
+                  Хураах
+                </a>
+              </>
+            )}
+          </>
+        ) : (
+          <p>{ad.detail}</p>
+        )}
+        {/* {readMore?ad.detail.slice(0,50):ad.detail} {readMore?<a  onClick={() =>setReadMore(!readMore)} className="underline text-blue-500" >цааш нь унших</a>:<a onClick={() =>setReadMore(!readMore)} className="underline text-blue-500" >хураах</a>}  */}
+      </p>
+      <div className="flex justify-between items-center mt-5"></div>
+      <button
+        onClick={() => requestToDoWork(ad._id)}
+        type="button"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+        }}
+        className="px-6 py-2.5 mx-2 mb-2 rounded-xl bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">
+        Хийх
+        <IconArrow displayDirection="right" />
+      </button>
+    </div>
+  );
+}
+
+

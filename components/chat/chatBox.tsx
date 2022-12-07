@@ -6,6 +6,8 @@ import { getCookie } from "cookies-next";
 import { useIsAgainGetDatas, useUserContext } from "../../context";
 import { instance } from "../../components/Layout";
 import { Chip } from "@mui/material";
+import ImageIcon from "@mui/icons-material/Image";
+import SendIcon from "@mui/icons-material/Send";
 export const connectChatServer = () => {
 	const socket = io("https://backend-leap2-production.up.railway.app/", {
 		transports: ["websocket"],
@@ -18,8 +20,11 @@ export const ColasipbleChatBox = ({ chatRoomName }: any) => {
 	const [message, setMessage] = useState("");
 	const { user } = useUserContext();
 	const { setIsAgainGetDatas } = useIsAgainGetDatas();
+	const [file,setFile] = useState('')
+	const [fileUrl,setFileUrl] = useState('')
+
 	const [messages, setMessages] = useState([
-		{ message: "", createdAt: "", owner: { email: "" } },
+		{ message: "", createdAt: "", owner: { email: "" },photo:'' },
 	]);
 	const listRef = useRef<HTMLElement | any>();
 	useEffect(() => {
@@ -34,25 +39,32 @@ export const ColasipbleChatBox = ({ chatRoomName }: any) => {
 		let socket = connectChatServer();
 		socket.onAny(async (type, message) => {
 			if (message && type === chatRoomName) {
-				await setIsSentMessage((e) => !e);
+				flushSync(() => {
+				 setIsSentMessage((e) => !e);
+				})
 				scrollToLastMessage();
+
 			}
 		});
 		return () => {
 			socket.disconnect();
 		};
 	}, []);
-
 	useEffect(() => {
 		async function sendChat() {
+			const form = new FormData()
+			form.append('message',message)
+			form.append('file',file)
 			try {
-				await instance.post(`/chat/${chatRoomName}/sendMessage`, { message });
-			} catch (error) {}
+				await instance.post(`/chat/${chatRoomName}/sendMessage`, form)
+				scrollToLastMessage()
+			} catch (error) {
+			}
 		}
 		if (message !== "" && chatRoomName !== "") sendChat();
 	}, [isSentMessage]);
 	useEffect(() => {
-		async function getMessages() {
+		(async function getMessages() {
 			setIsAgainGetDatas((e: any) => !e);
 			try {
 				const data = await instance.get(`/chat/${chatRoomName}/getMessages`, {
@@ -62,64 +74,106 @@ export const ColasipbleChatBox = ({ chatRoomName }: any) => {
 				});
 				flushSync(async () => {
 					setMessages(data.data.data);
+					setFile('')
 				});
 				scrollToLastMessage();
 			} catch (error) {}
-		}
-		getMessages();
+		})()
 	}, [chatRoomName, isSentMessage]);
 
-	useEffect(() => {});
 	function scrollToLastMessage() {
-		let lastChild = listRef.current!.lastChild;
+		let lastChild = listRef.current!.lastElementChild;
 		lastChild?.scrollIntoView({
-			block: "end",
-			inline: "nearest",
 			behavior: "smooth",
 		});
 	}
+function handleUploadFile(e:any) {
+	var file = e.target.files[0];
+	var reader = new FileReader();
+	reader.onload = function (event:any) {
+	  setFileUrl(event.target.result);
+	};
+	reader.readAsDataURL(file);
+	
+	setFile(e.target.files[0])
+}
 
 	return (
-		<div className='h-48 w-[100%] '>
-			<div
-				className='h-2/3  border border-green-500 rounded-lg
+    <div className="h-48 w-[100%] ">
+      <div
+        className="h-2/3  border border-green-500 rounded-lg
 			 overflow-scroll 
-			  '>
-				<ul ref={listRef}>
-					{messages &&
-						messages.map((message) => {
-							return (
-								<li className={`m-1 flex justify-between w-full px-1`}>
-									{message && user.email === message.owner.email ? (
-										<Chip label={message.message} />
-									) : (
-										<Chip
-											variant='outlined'
-											label={message.message}
-										/>
-									)}
-								</li>
-							);
-						})}
-				</ul>
-			</div>
-			<div className='flex flex-row items-center'>
-				<input
-					value={message}
-					onChange={async (e) => {
-						await setMessage(e.target.value);
-					}}
-					className='border border-green-500 bg-grey-100 rounded-lg w-4/6 h-8 align-center mt-2 mr-2'></input>
-				<PostButton
-					data={"Send"}
-					prop={"rgb(220, 211, 255)"}
-					ym={async () => {
-						if (message !== "" && chatRoomName !== "") {
-							await setIsSentMessage((e) => !e);
-							setMessage("");
-						}
-					}}></PostButton>
-			</div>
-		</div>
-	);
+			  ">
+        <ul ref={listRef}>
+          {messages &&
+            messages.map((message) => {
+              return (
+                <li className={`m-1 flex justify-between w-full px-1`}>
+                  {message && user.email === message.owner.email ? (
+                    <>
+                      <span></span>
+                      <div>
+                        <Chip label={message.message} />
+                        {message.photo ? (
+                          <img
+                            style={{ width: `150px`, height: "150px" }}
+                            src={`https://backend-leap2-production.up.railway.app/chat/photo/${message.photo}`}
+                          />
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <Chip variant="outlined" label={message.message} />
+                        {message.photo ? (
+                          <img
+                            style={{ width: `50px`, height: "50px" }}
+                            src={`https://backend-leap2-production.up.railway.app/chat/photo/${message.photo}`}
+                          />
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                      <span></span>
+                    </>
+                  )}
+                </li>
+              );
+            })}
+        </ul>
+      </div>
+      <div
+        style={{ display: "flex", alignItems: "center" }}
+        className="flex flex-row items-center  ">
+        <input
+          value={message}
+          onChange={async (e) => {
+            await setMessage(e.target.value);
+          }}
+          className="border border-green-500 bg-grey-100 rounded-lg w-4/6 h-8 align-center mt-2 mr-2"></input>
+        <label>
+          <ImageIcon className="text-blue-500" />
+          <input
+            className="hidden"
+            onChange={(e) => {
+              handleUploadFile(e);
+            }}
+            type="file"
+          />
+        </label>
+        <PostButton
+          data={"Илгээх"}
+          prop={"rgb(220, 211, 255)"}
+          ym={async () => {
+            if (message !== "" && chatRoomName !== "") {
+              await setIsSentMessage((e) => !e);
+              setMessage("");
+            }
+          }}></PostButton>
+      </div>
+    </div>
+  );
 };
