@@ -64,7 +64,7 @@ export const UserProfileBox = ({ request, post }: any) => {
 						}}
 					/>
 				</div>
-				{isRating ? <Rate post={post} isRating={isRating}/> : <></>}
+				{isRating ? <Rate post={post} /> : ""}
 			</div>
 		);
 	} else {
