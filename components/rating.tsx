@@ -1,7 +1,9 @@
 import React, { ReactNode } from "react";
 import { instance } from "../components/Layout";
 import { useIsAgainGetDatas, useModalContext } from "../context";
-export const Rate: React.FC<RateType> = ({ post }:any) => {
+import { motion } from "framer-motion";
+import { Slider } from "@mui/material";
+export const Rate: React.FC<RateType> = ({ post, isRating }:any) => {
   const [state, setState] = React.useState<any>(0);
   const { setIsAgainGetDatas } = useIsAgainGetDatas();
   const {setModalText,setOpenModal} = useModalContext()
@@ -9,28 +11,20 @@ export const Rate: React.FC<RateType> = ({ post }:any) => {
     await instance.post(`/post/${post._id}/rateWorkerPerformance`, { rating: state })
     .then((res) => {
       setIsAgainGetDatas((e: boolean) => !e);
-      setOpenModal(true),
+      setOpenModal(true), 
         setModalText('amjilttai')
 
     });
   };
   return (
-    <div className="items-center justify-center w-full flex flex-col justify-between font-medium text-center  bg-white   h-[auto]    ">
-      <div>
-        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          {state}
-        </label>
-        <input
-          id="medium-range"
-          onChange={(e) => setState(e.target.value)}
-          type="range"
-          value={state}
-          className="w-full h-2 mb-6 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-        />
-      </div>
+    <motion.div
+     initial={{ x: 100, opacity: 0 }}
+     animate={isRating?{ x: 0, opacity: 1 }:{ x: 100, opacity: 0 }}
+     className="items-center justify-center w-full flex bg-white flex-col justify-between font-medium text-center    h-[auto]    ">
+      <Slider defaultValue={state} sx={{width:'60%'}} onChange={(e:any) => setState(e.target.value)} aria-label="Default" valueLabelDisplay="auto" />
       <button onClick={rateWorkerPerformance}>Батлах</button>
-    </div>
+    </motion.div>
   );
 };
 
-type RateType = { children?: ReactNode, post: {_id:string}[] };
+type RateType = { children?: ReactNode,isRating?:boolean, post: {_id:string}[] };
